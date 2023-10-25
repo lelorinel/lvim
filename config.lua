@@ -29,7 +29,7 @@ vim.g.clipboard = {
 --<cmd>lua require('lvim.lsp.utils').format()<cr>
 lvim.keys.normal_mode["<C-f>"] = "<cmd>lua require('lvim.lsp.utils').format()<cr>"
 -- <Ctrl>q left buffer - <Ctrl>e right buffer - <Ctrl>w close current buffer
-lvim.keys.normal_mode["<C-w>"] = ":bd<CR>"
+lvim.keys.normal_mode["<C-w>"] = "<cmd>BufferKill<CR>"
 lvim.keys.normal_mode["<C-q>"] = ":bprevious<CR>"
 lvim.keys.normal_mode["<C-e>"] = ":bnext<CR>"
 -- <CTRL>s save
@@ -47,12 +47,13 @@ lvim.keys.normal_mode["1"] = ":ToggleTerm direction=float<CR>"
 lvim.keys.normal_mode["2"] = ":ToggleTerm direction=horizontal size=20<CR>"
 lvim.keys.normal_mode["3"] = ":ToggleTerm direction=vertical size=50<CR>"
 lvim.keys.normal_mode["4"] = ":ToggleTerm direction=tab<CR>"
--- if terminal open <Ctrl>1 close terminal
+-- if terminal open <Ctrl>1 close terminal ESC close directly
 if vim.fn.exists(":ToggleTerm") then
   lvim.keys.normal_mode["<C-1>"] = ":ToggleTerm direction=float<CR>"
   lvim.keys.normal_mode["<C-2>"] = ":ToggleTerm direction=horizontal<CR>"
   lvim.keys.normal_mode["<C-3>"] = ":ToggleTerm direction=vertical<CR>"
   lvim.keys.normal_mode["<C-4>"] = ":ToggleTerm direction=tab<CR>"
+  lvim.keys.normal_mode["<ESC>"] = "<C-\\><C-n>"
 end
 
 -- <Ctrl>c quit insert mode
@@ -301,23 +302,47 @@ lvim.plugins = {
     end
   },
   { "nvim-lua/plenary.nvim" },
-  -- {
-  --   "Dhanus3133/LeetBuddy.nvim",
-  --   dependencies = {
-  --     "nvim-lua/plenary.nvim",
-  --     "nvim-telescope/telescope.nvim",
-  --   },
-  --   config = function()
-  --     require("leetbuddy").setup({})
-  --   end,
-  --   keys = {
-  --     { "<leader>mq", "<cmd>LBQuestions<cr>", desc = "List Questions" },
-  --     { "<leader>ml", "<cmd>LBQuestion<cr>",  desc = "View Question" },
-  --     { "<leader>mr", "<cmd>LBReset<cr>",     desc = "Reset Code" },
-  --     { "<leader>mt", "<cmd>LBTest<cr>",      desc = "Run Code" },
-  --     { "<leader>ms", "<cmd>LBSubmit<cr>",    desc = "Submit Code" },
-  --   },
-  -- }
+
+  "rebelot/kanagawa.nvim",  -- neorg needs a colorscheme with treesitter support
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    opts = {
+      highlight = { enable = true },
+    },
+    config = function(_, opts)
+      require("nvim-treesitter.configs").setup(opts)
+    end,
+  },
+  {
+    "nvim-neorg/neorg",
+    -- build = ":Neorg sync-parsers",
+    ft = 'norg',
+    cmd = "Neorg",
+    priority = 30,
+    dependencies = { "nvim-lua/plenary.nvim" },
+    use_makefile = true,
+    config = function()
+      require("neorg").setup {
+        load = {
+          ["core.defaults"] = {},
+          ["core.concealer"] = {},
+          ["core.dirman"] = {
+            config = {
+              workspaces = {
+                work = "J:\\vimnotes",
+                home = "H:\\vimnotes"
+              },
+              default_workspace = "work",
+            },
+          },
+        },
+      }
+
+      vim.wo.foldlevel = 99
+      vim.wo.conceallevel = 2
+    end,
+  }
 }
 
 
@@ -326,22 +351,27 @@ local alpha = function()
 end
 if vim.g.neovide then
   vim.o.guifont = "Fire Code Retina:h8";
-  -- vim.g.neovide_transparency = 0.9
-  -- vim.g.transparency = 0.9
-  -- vim.g.neovide_background_color = "#0f1117" .. alpha()
+  vim.g.neovide_transparency = 0.9
+  vim.g.transparency = 0.9
+  vim.g.neovide_background_color = "#0f1117" .. alpha()
   vim.g.neovide_cursor_vfx_mode = "railgun"
+
+  -- float blur etc..
+  vim.g.neovide_floating_blur_amount_x = 2.0
+  vim.g.neovide_floating_blur_amount_y = 2.0
+  vim.g.neovide_theme = 'auto'
 end
 
 -- after start use ':colorscheme sonokai' command
-lvim.colorscheme = "sonokai"
+lvim.colorscheme = "kanagawa"
 -- hop settings
 local hop = require('hop')
 local directions = require('hop.hint').HintDirection
 vim.keymap.set('', 'f', function()
-  hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = true })
+  hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = false})
 end, { remap = true })
 vim.keymap.set('', 'F', function()
-  hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = true })
+  hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = false})
 end, { remap = true })
 vim.keymap.set('', 't', function()
   hop.hint_char1({ direction = directions.AFTER_CURSOR, current_line_only = true, hint_offset = -1 })
@@ -349,3 +379,4 @@ end, { remap = true })
 vim.keymap.set('', 'T', function()
   hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = true, hint_offset = 1 })
 end, { remap = true })
+
