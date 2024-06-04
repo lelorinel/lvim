@@ -1,3 +1,4 @@
+vim.deprecate = function() end
 local base_dir = vim.env.LUNARVIM_BASE_DIR
     or (function()
       local init_path = debug.getinfo(1, "S").source

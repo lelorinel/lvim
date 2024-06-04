@@ -4,26 +4,27 @@
 -- Discord: https://discord.com/invite/Xb9B4Ny
 
 -- Enable powershell as your default shell
-vim.opt.shell = "pwsh.exe -NoLogo"
-vim.opt.shellcmdflag =
-"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
-vim.cmd [[
-		let &shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-		let &shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
-		set shellquote= shellxquote=
-  ]]
+-- vim.opt.shell = "pwsh.exe -NoLogo"
+-- vim.opt.shellcmdflag =
+-- "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+-- vim.cmd [[
+-- 		let &shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+-- 		let &shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+-- 		set shellquote= shellxquote=
+--   ]]
 
--- Set a compatible clipboard manager
-vim.g.clipboard = {
-  copy = {
-    ["+"] = "win32yank.exe -i --crlf",
-    ["*"] = "win32yank.exe -i --crlf",
-  },
-  paste = {
-    ["+"] = "win32yank.exe -o --lf",
-    ["*"] = "win32yank.exe -o --lf",
-  },
-}
+-- -- Set a compatible clipboard manager
+-- vim.g.clipboard = {
+--   copy = {
+--     ["+"] = "win32yank.exe -i --crlf",
+--     ["*"] = "win32yank.exe -i --crlf",
+--   },
+--   paste = {
+--     ["+"] = "win32yank.exe -o --lf",
+--     ["*"] = "win32yank.exe -o --lf",
+--   },
+-- }
+
 
 -- <Ctrl>f lsp format
 --<cmd>lua require('lvim.lsp.utils').format()<cr>
@@ -41,7 +42,7 @@ lvim.keys.normal_mode["<S-l>"] = ":vsplit<CR>"
 lvim.keys.normal_mode["<S-j>"] = ":split<CR>"
 lvim.keys.normal_mode["<S-k>"] = ":vsplit<CR>"
 -- <Ctrl>a = :LspStart
-lvim.keys.normal_mode["<C-a>"] = ":LspStart<CR>"
+lvim.keys.normal_mode["<C-x>"] = ":LspStart<CR>"
 -- <Ctrl>1 (Not numpad) start toggleterm <C-F1>
 lvim.keys.normal_mode["1"] = ":ToggleTerm direction=float<CR>"
 lvim.keys.normal_mode["2"] = ":ToggleTerm direction=horizontal size=20<CR>"
@@ -56,7 +57,7 @@ if vim.fn.exists(":ToggleTerm") then
   lvim.keys.normal_mode["<ESC>"] = "<C-\\><C-n>"
 end
 
-lvim.keys.normal_mode["<C-a>"] = ":SymbolsOutline<CR>"
+lvim.keys.normal_mode["<C-m>"] = ":SymbolsOutline<CR>"
 
 -- <Ctrl>c quit insert mode
 lvim.keys.insert_mode["<C-c>"] = "<ESC>"
@@ -235,7 +236,7 @@ lvim.plugins = {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
-      signs = true,  -- show icons in the signs column
+      signs = true,      -- show icons in the signs column
       sign_priority = 8, -- sign priority
       -- keywords recognized as todo comments
       keywords = {
@@ -253,8 +254,8 @@ lvim.plugins = {
         TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
       },
       gui_style = {
-        fg = "NONE",     -- The gui style to use for the fg highlight group.
-        bg = "BOLD",     -- The gui style to use for the bg highlight group.
+        fg = "NONE",         -- The gui style to use for the fg highlight group.
+        bg = "BOLD",         -- The gui style to use for the bg highlight group.
       },
       merge_keywords = true, -- when true, custom keywords will be merged with the defaults
       -- highlighting of the line containing the todo comment
@@ -262,16 +263,16 @@ lvim.plugins = {
       -- * keyword: highlights of the keyword
       -- * after: highlights after the keyword (todo text)
       highlight = {
-        multiline = true,            -- enable multine todo comments
-        multiline_pattern = "^.",    -- lua pattern to match the next multiline from the start of the matched keyword
-        multiline_context = 10,      -- extra lines that will be re-evaluated when changing a line
-        before = "",                 -- "fg" or "bg" or empty
-        keyword = "wide",            -- "fg", "bg", "wide", "wide_bg", "wide_fg" or empty. (wide and wide_bg is the same as bg, but will also highlight surrounding characters, wide_fg acts accordingly but with fg)
-        after = "fg",                -- "fg" or "bg" or empty
+        multiline = true,                -- enable multine todo comments
+        multiline_pattern = "^.",        -- lua pattern to match the next multiline from the start of the matched keyword
+        multiline_context = 10,          -- extra lines that will be re-evaluated when changing a line
+        before = "",                     -- "fg" or "bg" or empty
+        keyword = "wide",                -- "fg", "bg", "wide", "wide_bg", "wide_fg" or empty. (wide and wide_bg is the same as bg, but will also highlight surrounding characters, wide_fg acts accordingly but with fg)
+        after = "fg",                    -- "fg" or "bg" or empty
         pattern = [[.*<(KEYWORDS)\s*:]], -- pattern or table of patterns, used for highlighting (vim regex)
-        comments_only = true,        -- uses treesitter to match keywords in comments only
-        max_line_len = 400,          -- ignore lines longer than this
-        exclude = {},                -- list of file types to exclude highlighting
+        comments_only = true,            -- uses treesitter to match keywords in comments only
+        max_line_len = 400,              -- ignore lines longer than this
+        exclude = {},                    -- list of file types to exclude highlighting
       },
       -- list of named colors where we try to extract the guifg from the
       -- list of highlight groups or use the hex color if hl not found as a fallback
@@ -317,35 +318,35 @@ lvim.plugins = {
       action_keys = { -- key mappings for actions in the trouble list
         -- map to {} to remove a mapping, for example:
         -- close = {},
-        close = "q",                                                                       -- close the list
-        cancel = "<esc>",                                                                  -- cancel the preview and get back to your last window / buffer / cursor
-        refresh = "r",                                                                     -- manually refresh
-        jump = { "<cr>", "<tab>", "<2-leftmouse>" },                                       -- jump to the diagnostic or open / close folds
-        open_split = { "<c-x>" },                                                          -- open buffer in new split
-        open_vsplit = { "<c-v>" },                                                         -- open buffer in new vsplit
-        open_tab = { "<c-t>" },                                                            -- open buffer in new tab
-        jump_close = { "o" },                                                              -- jump to the diagnostic and close the list
-        toggle_mode = "m",                                                                 -- toggle between "workspace" and "document" diagnostics mode
-        switch_severity = "s",                                                             -- switch "diagnostics" severity filter level to HINT / INFO / WARN / ERROR
-        toggle_preview = "P",                                                              -- toggle auto_preview
-        hover = "K",                                                                       -- opens a small popup with the full multiline message
-        preview = "p",                                                                     -- preview the diagnostic location
-        open_code_href = "c",                                                              -- if present, open a URI with more information about the diagnostic error
-        close_folds = { "zM", "zm" },                                                      -- close all folds
-        open_folds = { "zR", "zr" },                                                       -- open all folds
-        toggle_fold = { "zA", "za" },                                                      -- toggle fold of current file
-        previous = "k",                                                                    -- previous item
-        next = "j",                                                                        -- next item
-        help = "?"                                                                         -- help menu
+        close = "q",                                                                        -- close the list
+        cancel = "<esc>",                                                                   -- cancel the preview and get back to your last window / buffer / cursor
+        refresh = "r",                                                                      -- manually refresh
+        jump = { "<cr>", "<tab>", "<2-leftmouse>" },                                        -- jump to the diagnostic or open / close folds
+        open_split = { "<c-x>" },                                                           -- open buffer in new split
+        open_vsplit = { "<c-v>" },                                                          -- open buffer in new vsplit
+        open_tab = { "<c-t>" },                                                             -- open buffer in new tab
+        jump_close = { "o" },                                                               -- jump to the diagnostic and close the list
+        toggle_mode = "m",                                                                  -- toggle between "workspace" and "document" diagnostics mode
+        switch_severity = "s",                                                              -- switch "diagnostics" severity filter level to HINT / INFO / WARN / ERROR
+        toggle_preview = "P",                                                               -- toggle auto_preview
+        hover = "K",                                                                        -- opens a small popup with the full multiline message
+        preview = "p",                                                                      -- preview the diagnostic location
+        open_code_href = "c",                                                               -- if present, open a URI with more information about the diagnostic error
+        close_folds = { "zM", "zm" },                                                       -- close all folds
+        open_folds = { "zR", "zr" },                                                        -- open all folds
+        toggle_fold = { "zA", "za" },                                                       -- toggle fold of current file
+        previous = "k",                                                                     -- previous item
+        next = "j",                                                                         -- next item
+        help = "?"                                                                          -- help menu
       },
-      multiline = true,                                                                    -- render multi-line messages
-      indent_lines = true,                                                                 -- add an indent guide below the fold icons
-      win_config = { border = "single" },                                                  -- window configuration for floating windows. See |nvim_open_win()|.
-      auto_open = false,                                                                   -- automatically open the list when you have diagnostics
-      auto_close = false,                                                                  -- automatically close the list when you have no diagnostics
-      auto_preview = true,                                                                 -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
-      auto_fold = false,                                                                   -- automatically fold a file trouble list at creation
-      auto_jump = { "lsp_definitions" },                                                   -- for the given modes, automatically jump if there is only a single result
+      multiline = true,                                                                     -- render multi-line messages
+      indent_lines = true,                                                                  -- add an indent guide below the fold icons
+      win_config = { border = "single" },                                                   -- window configuration for floating windows. See |nvim_open_win()|.
+      auto_open = false,                                                                    -- automatically open the list when you have diagnostics
+      auto_close = false,                                                                   -- automatically close the list when you have no diagnostics
+      auto_preview = true,                                                                  -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
+      auto_fold = false,                                                                    -- automatically fold a file trouble list at creation
+      auto_jump = { "lsp_definitions" },                                                    -- for the given modes, automatically jump if there is only a single result
       include_declaration = { "lsp_references", "lsp_implementations", "lsp_definitions" }, -- for the given modes, include the declaration of the current symbol in the results
       signs = {
         -- icons / text used for a diagnostic
@@ -357,19 +358,41 @@ lvim.plugins = {
       },
       use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
     },
-  }
+  },
+  "rockerBOO/boo-colorscheme-nvim",
+  "folke/tokyonight.nvim",
+  "savq/melange-nvim",
+  "scottmckendry/cyberdream.nvim",
+  {
+    "vhyrro/luarocks.nvim",
+    priority = 1000,
+    config = true,
+    opts = {
+      rocks = { "lua-curl", "nvim-nio", "mimetypes", "xml2lua" }
+    }
+  },
+  {
+    "rest-nvim/rest.nvim",
+    ft = "http",
+    dependencies = { "luarocks.nvim" },
+    config = function()
+      require("rest-nvim").setup()
+    end,
+  },
 }
 
 
 local alpha = function()
-  return string.format("%x", math.floor(255 * vim.g.transparency or 0.8))
+  return string.format("%x", math.floor(255 * (vim.g.transparency or 0.8)))
 end
 if vim.g.neovide then
-  vim.o.guifont = "Iosevka Mayukai Codepro:h12";
-  vim.g.neovide_transparency = 1
-  vim.g.transparency = 1
+  vim.o.guifont = "FiraCode Nerd Font:h12"
+  -- vim.g.neovide_transparency = 1
+  vim.g.neovide_transparency = 0.75
+  vim.g.transparency = 0.45
   vim.g.neovide_background_color = "#0f1117" .. alpha()
-  vim.g.neovide_cursor_vfx_mode = "railgun"
+  -- vim.g.neovide_cursor_vfx_mode = "railgun"
+  vim.g.neovide_cursor_vfx_mode = "sonicboom"
 
   -- float blur etc..
   vim.g.neovide_floating_blur_amount_x = 2.0
@@ -378,7 +401,7 @@ if vim.g.neovide then
 end
 
 -- after start use ':colorscheme sonokai' command
--- lvim.colorscheme = "kanagawa"
+lvim.colorscheme = "cyberdream"
 -- hop settings
 local hop = require('hop')
 local directions = require('hop.hint').HintDirection
@@ -395,7 +418,12 @@ vim.keymap.set('', 'T', function()
   hop.hint_char1({ direction = directions.BEFORE_CURSOR, current_line_only = true, hint_offset = 1 })
 end, { remap = true })
 
-vim.cmd('set foldmethod=syntax')
+-- Wrap Options
+vim.wo.wrap = true
+vim.wo.linebreak = true
+vim.wo.list = false
+
+-- vim.cmd('set foldmethod=syntax')
 -- trouble vim
 -- x is just naming not a keybinding
 lvim.builtin.which_key.mappings["x"] = { "", "Trouble" }
@@ -441,3 +469,19 @@ lvim.builtin.which_key.mappings["tw"] = {
   "<cmd>TodoTrouble<cr>",
   "Trouble"
 }
+
+-- -- tailwindcss
+-- require 'lspconfig'.tailwindcss.setup {
+--   filetypes = { 'vue' }
+-- }
+-- -- volar
+require 'lspconfig'.volar.setup {
+  -- filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+  filetypes = { 'vue' },
+  init_options = {
+    vue = {
+      hybridMode = true
+    }
+  }
+}
+
