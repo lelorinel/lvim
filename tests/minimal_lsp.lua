@@ -25,6 +25,13 @@ local function load_plugins()
     "neovim/nvim-lspconfig",
     "williamboman/mason-lspconfig.nvim",
     "williamboman/mason.nvim",
+    config = function() 
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "tsserver", "eslint", "jsonls", "html", "cssls" },
+        automatic_installation = true, -- Otomatik yükleme
+      })
+    end
   }, {
     root = plugins_dir,
   })

@@ -28,7 +28,17 @@
 
 -- <Ctrl>f lsp format
 --<cmd>lua require('lvim.lsp.utils').format()<cr>
-lvim.keys.normal_mode["<C-f>"] = "<cmd>lua require('lvim.lsp.utils').format()<cr>"
+-- if eslint avaible use eslint else use format
+lvim.keys.normal_mode["<C-f>"] = function()
+  vim.cmd("EslintFixAll")
+end
+lvim.keys.normal_mode["<C-g>"] = function()
+  require('lvim.lsp.utils').format()
+end
+-- lvim.keys.normal_mode["<C-f>"] = "<cmd>lua require('lvim.lsp.utils').format()<cr>"
+lvim.keys.normal_mode["<C-d>"] = "<cmd>EslintFixAll<cr>"
+-- eslint --fix
+-- lvim.keys.normal_mode["<C-f>"] = "<cmd>!eslint --fix %<CR>"
 -- <Ctrl>q left buffer - <Ctrl>e right buffer - <Ctrl>w close current buffer
 lvim.keys.normal_mode["<C-w>"] = "<cmd>BufferKill<CR>"
 lvim.keys.normal_mode["<C-q>"] = ":bprevious<CR>"
@@ -300,65 +310,6 @@ lvim.plugins = {
       },
     }
   },
-  {
-    "folke/trouble.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      position = "bottom", -- position of the list can be: bottom, top, left, right
-      height = 10, -- height of the trouble list when position is top or bottom
-      width = 50, -- width of the list when position is left or right
-      icons = true, -- use devicons for filenames
-      mode = "workspace_diagnostics", -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
-      severity = nil, -- nil (ALL) or vim.diagnostic.severity.ERROR | WARN | INFO | HINT
-      fold_open = "", -- icon used for open folds
-      fold_closed = "", -- icon used for closed folds
-      group = true, -- group results by file
-      padding = true, -- add an extra new line on top of the list
-      cycle_results = true, -- cycle item list when reaching beginning or end of list
-      action_keys = { -- key mappings for actions in the trouble list
-        -- map to {} to remove a mapping, for example:
-        -- close = {},
-        close = "q",                                                                        -- close the list
-        cancel = "<esc>",                                                                   -- cancel the preview and get back to your last window / buffer / cursor
-        refresh = "r",                                                                      -- manually refresh
-        jump = { "<cr>", "<tab>", "<2-leftmouse>" },                                        -- jump to the diagnostic or open / close folds
-        open_split = { "<c-x>" },                                                           -- open buffer in new split
-        open_vsplit = { "<c-v>" },                                                          -- open buffer in new vsplit
-        open_tab = { "<c-t>" },                                                             -- open buffer in new tab
-        jump_close = { "o" },                                                               -- jump to the diagnostic and close the list
-        toggle_mode = "m",                                                                  -- toggle between "workspace" and "document" diagnostics mode
-        switch_severity = "s",                                                              -- switch "diagnostics" severity filter level to HINT / INFO / WARN / ERROR
-        toggle_preview = "P",                                                               -- toggle auto_preview
-        hover = "K",                                                                        -- opens a small popup with the full multiline message
-        preview = "p",                                                                      -- preview the diagnostic location
-        open_code_href = "c",                                                               -- if present, open a URI with more information about the diagnostic error
-        close_folds = { "zM", "zm" },                                                       -- close all folds
-        open_folds = { "zR", "zr" },                                                        -- open all folds
-        toggle_fold = { "zA", "za" },                                                       -- toggle fold of current file
-        previous = "k",                                                                     -- previous item
-        next = "j",                                                                         -- next item
-        help = "?"                                                                          -- help menu
-      },
-      multiline = true,                                                                     -- render multi-line messages
-      indent_lines = true,                                                                  -- add an indent guide below the fold icons
-      win_config = { border = "single" },                                                   -- window configuration for floating windows. See |nvim_open_win()|.
-      auto_open = false,                                                                    -- automatically open the list when you have diagnostics
-      auto_close = false,                                                                   -- automatically close the list when you have no diagnostics
-      auto_preview = true,                                                                  -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
-      auto_fold = false,                                                                    -- automatically fold a file trouble list at creation
-      auto_jump = { "lsp_definitions" },                                                    -- for the given modes, automatically jump if there is only a single result
-      include_declaration = { "lsp_references", "lsp_implementations", "lsp_definitions" }, -- for the given modes, include the declaration of the current symbol in the results
-      signs = {
-        -- icons / text used for a diagnostic
-        error = "",
-        warning = "",
-        hint = "",
-        information = "",
-        other = "",
-      },
-      use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
-    },
-  },
   "rockerBOO/boo-colorscheme-nvim",
   "folke/tokyonight.nvim",
   "savq/melange-nvim",
@@ -371,14 +322,140 @@ lvim.plugins = {
       rocks = { "lua-curl", "nvim-nio", "mimetypes", "xml2lua" }
     }
   },
+  -- {
+  --   "rest-nvim/rest.nvim",
+  --   ft = "http",
+  --   dependencies = { "luarocks.nvim" },
+  --   config = function()
+  --     require("rest-nvim").setup()
+  --   end,
+  -- },
+  { "EdenEast/nightfox.nvim" },
+  { "rose-pine/neovim",      name = "rose-pine" },
   {
-    "rest-nvim/rest.nvim",
-    ft = "http",
-    dependencies = { "luarocks.nvim" },
-    config = function()
-      require("rest-nvim").setup()
-    end,
+    "chentoast/marks.nvim",
+    event = "VeryLazy",
+    opts = {},
   },
+  {
+    "svampkorg/moody.nvim",
+    event = { "ModeChanged", "BufWinEnter", "WinEnter" },
+    dependencies = {
+      -- or whatever "colorscheme" you use to setup your HL groups :)
+      -- Colours can also be set within setup, in which case this is redundant.
+      "catppuccin/nvim",
+    },
+    opts = {
+      -- you can set different blend values for your different modes.
+      -- Some colours might look better more dark, so set a higher value
+      -- will result in a darker shade.
+      blends = {
+        normal = 0.2,
+        insert = 0.2,
+        visual = 0.25,
+        command = 0.2,
+        operator = 0.2,
+        replace = 0.2,
+        select = 0.2,
+        terminal = 0.2,
+        terminal_n = 0.2,
+      },
+      -- there are two ways to define colours for the different modes.
+      -- one way is to define theme here in colors. Another way is to
+      -- set them up with highlight groups. Any highlight group set takes
+      -- precedence over any colours defined here.
+      colors = {
+        normal = "#00BFFF",
+        insert = "#70CF67",
+        visual = "#AD6FF7",
+        command = "#EB788B",
+        operator = "#FF8F40",
+        replace = "#E66767",
+        select = "#AD6FF7",
+        terminal = "#4CD4BD",
+        terminal_n = "#00BBCC",
+      },
+      -- disable filetypes here. Add for example "TelescopePrompt" to
+      -- not have any coloured cursorline for the telescope prompt.
+      disabled_filetypes = { "TelescopePrompt" },
+      -- you can turn on or off bold characters for the line numbers
+      bold_nr = true,
+      -- you can turn on and off a feature which shows a little icon and
+      -- registry number at the end of the CursorLine, for when you are
+      -- recording a macro! Default is false.
+      recording = {
+        enabled = false,
+        icon = "󰑋",
+        -- you can set some text to surround the recording registry char with
+        -- or just set one to empty to maybe have just one letter, an arrow
+        -- perhaps! For example recording to q, you could have! "󰑋    q" :D
+        pre_registry_text = "[",
+        post_registry_text = "]",
+      },
+    },
+  },
+  {
+    'jesseleite/nvim-macroni',
+    lazy = false,
+    opts = {
+      -- All of your `setup(opts)` and saved macros will go here
+    },
+  },
+  {
+    "zenbones-theme/zenbones.nvim",
+    -- Optionally install Lush. Allows for more configuration or extending the colorscheme
+    -- If you don't want to install lush, make sure to set g:zenbones_compat = 1
+    -- In Vim, compat mode is turned on as Lush only works in Neovim.
+    dependencies = "rktjmp/lush.nvim",
+    lazy = false,
+    priority = 1000,
+    -- you can set set configuration options here
+    -- config = function()
+    --     vim.g.zenbones_darken_comments = 45
+    --     vim.cmd.colorscheme('zenbones')
+    -- end
+  },
+  {
+    'iamyoki/buffer-reopen.nvim',
+    opts = {}
+  },
+  {
+    "folke/trouble.nvim",
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      {
+        "<leader>xX",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
+      {
+        "<leader>cs",
+        "<cmd>Trouble symbols toggle focus=false<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      {
+        "<leader>cl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
+      {
+        "<leader>xL",
+        "<cmd>Trouble loclist toggle<cr>",
+        desc = "Location List (Trouble)",
+      },
+      {
+        "<leader>xQ",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    },
+  }
 }
 
 
@@ -387,9 +464,9 @@ local alpha = function()
 end
 if vim.g.neovide then
   vim.o.guifont = "FiraCode Nerd Font:h12"
-  -- vim.g.neovide_transparency = 1
-  vim.g.neovide_transparency = 0.75
-  vim.g.transparency = 0.45
+  vim.g.neovide_transparency = 1
+  -- vim.g.neovide_transparency = 0.76
+  vim.g.transparency = 0.4
   vim.g.neovide_background_color = "#0f1117" .. alpha()
   -- vim.g.neovide_cursor_vfx_mode = "railgun"
   vim.g.neovide_cursor_vfx_mode = "sonicboom"
@@ -400,7 +477,7 @@ if vim.g.neovide then
   vim.g.neovide_theme = 'auto'
 end
 
--- after start use ':colorscheme sonokai' command
+-- -- after start use ':colorscheme sonokai' command
 lvim.colorscheme = "cyberdream"
 -- hop settings
 local hop = require('hop')
@@ -470,18 +547,50 @@ lvim.builtin.which_key.mappings["tw"] = {
   "Trouble"
 }
 
--- -- tailwindcss
--- require 'lspconfig'.tailwindcss.setup {
---   filetypes = { 'vue' }
--- }
--- -- volar
-require 'lspconfig'.volar.setup {
-  -- filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-  filetypes = { 'vue' },
-  init_options = {
-    vue = {
-      hybridMode = true
-    }
-  }
+
+local lspconfig = require("lspconfig")
+local mason_lspconfig = require("mason-lspconfig")
+-- Mason LSPconfig ile sunucuları otomatik ata
+mason_lspconfig.setup_handlers({
+  function(server_name)
+    lspconfig[server_name].setup({
+      on_attach = on_attach,
+      capabilities = require("cmp_nvim_lsp").default_capabilities(),
+      -- highlight enabled
+        highlight = {
+    enable = true,
+    use_languagetree = true,
+  },
+  autotag = { enable = true },
+  rainbow = { enable = true },
+  context_commentstring = { enable = true, config = { javascriptreact = { style_element = "{/*%s*/}" } } },
+    })
+  end,
+})
+
+local highlight = {
+    "RainbowRed",
+    "RainbowYellow",
+    "RainbowBlue",
+    "RainbowOrange",
+    "RainbowGreen",
+    "RainbowViolet",
+    "RainbowCyan",
 }
 
+local hooks = require "ibl.hooks"
+-- create the highlight groups in the highlight setup hook, so they are reset
+-- every time the colorscheme changes
+hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+    vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+    vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+    vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
+    vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+    vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+    vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+    vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+end)
+
+require("ibl").setup { indent = { highlight = highlight } }
+
+-- vim.opt.fileformats = { "unix" }

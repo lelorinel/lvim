@@ -136,6 +136,9 @@ local core_plugins = {
       local path = utils.join_paths(get_runtime_dir(), "site", "pack", "lazy", "opt", "nvim-treesitter")
       vim.opt.rtp:prepend(path) -- treesitter needs to be before nvim's runtime in rtp
       require("lvim.core.treesitter").setup()
+      -- Activate treesitter for all filetypes
+      api.nvim_command("TSBufEnable *")
+      api.nvim_command("TSBufEnable")
     end,
     cmd = {
       "TSInstall",
@@ -147,6 +150,7 @@ local core_plugins = {
       "TSInstallFromGrammar",
     },
     event = "User FileOpened",
+
   },
   {
     -- Lazy loaded by Comment.nvim pre_hook
@@ -327,11 +331,30 @@ local core_plugins = {
 
   {
     "lukas-reineke/indent-blankline.nvim",
-    config = function()
-      require("lvim.core.indentlines").setup()
-    end,
+    -- main = "ibl",
+    -- config = function()
+    --   require("lvim.core.indentlines").setup()
+    -- end,
     event = "User FileOpened",
     enabled = lvim.builtin.indentlines.active,
+    opts = {
+  -- char = "▏",
+      char = "│",
+      filetype_exclude = {
+        "help",
+        "alpha",
+        "dashboard",
+        "neo-tree",
+        "Trouble",
+        "lazy",
+        "mason",
+        "notify",
+        "toggleterm",
+        "lazyterm",
+      },
+      show_trailing_blankline_indent = false,
+      show_current_context = false,
+    }
   },
 
   {
