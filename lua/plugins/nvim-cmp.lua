@@ -37,23 +37,87 @@ return {
       }),
       formatting = {
         format = function(entry, item)
-          local icons = LazyVim.config.icons.kinds
-          if icons[item.kind] then
-            item.kind = item.kind .. icons[item.kind]
-          end
-
-          local widths = {
-            abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 40,
-            menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 30,
+          local lspkind_icons = {
+            Text = "",
+            Method = "",
+            Function = "󰊕",
+            Constructor = "󰡱",
+            Field = "",
+            Variable = "",
+            Class = "",
+            Interface = "",
+            Module = "",
+            Property = "",
+            Unit = "",
+            Value = "",
+            Enum = "",
+            Keyword = "",
+            Snippet = "",
+            Color = "",
+            File = "",
+            Reference = "",
+            Folder = "",
+            EnumMember = "",
+            Constant = "",
+            Struct = "",
+            Event = "",
+            Operator = "",
+            TypeParameter = " ",
+            Robot = "󱚤",
+            Roboti = "󱨚",
+            Smiley = " ",
+            Note = " ",
           }
-
-          for key, width in pairs(widths) do
-            if item[key] and vim.fn.strdisplaywidth(item[key]) > width then
-              item[key] = vim.fn.strcharpart(item[key], 0, width - 1) .. "…"
-            end
+          local meta_type = vim_item.kind
+          -- load lspkind icons
+          vim_item.kind = lspkind_icons[vim_item.kind]
+          if entry.source.name == "cmp_tabnine" then
+            vim_item.kind = lspkind_icons["Robot"]
+            -- vim_item.kind_hl_group = "CmpItemKindTabnine"
           end
 
-          return item
+          -- if entry.source.name == 'emoji' then
+          --     vim_item.kind = lspkind_icons['Smiley']
+          --     vim_item.kind_hl_group = 'CmpItemKindEmoji'
+          -- end
+
+          if entry.source.name == "look" then
+            vim_item.kind = lspkind_icons["Note"]
+            -- vim_item.kind_hl_group = "CmpItemKindEmoji"
+          end
+          -- if entry.source.name == 'codeium' then
+          --     vim_item.kind = lspkind_icons['Roboti']
+          --     -- vim_item.kind_hl_group = "CmpItemKindEmoji"
+          -- end
+          vim_item.menu = ({
+            buffer = "[Buffer]",
+            nvim_lsp = meta_type,
+            path = "[Path]",
+            luasnip = "[LuaSnip]",
+            cmp_tabnine = "[TN]",
+            -- emoji = '[Emoji]',
+            look = "[Dict]",
+            -- codeium = '[Code]',
+          })[entry.source.name]
+
+          return vim_item
+          -- local icons = LazyVim.config.icons.kinds
+          -- if icons[item.kind] then
+          --   item.kind = item.kind .. icons[item.kind]
+          -- end
+          --
+          -- local widths = {
+          --   abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 40,
+          --   menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 30,
+          -- }
+          --
+          -- for key, width in pairs(widths) do
+          --   if item[key] and vim.fn.strdisplaywidth(item[key]) > width then
+          --     item[key] = vim.fn.strcharpart(item[key], 0, width - 1) .. "…"
+          --   end
+          -- end
+          --
+          -- return item
         end,
       },
       experimental = {

@@ -1,0 +1,72 @@
+{
+  "Gmail": {
+    "prefix": "gmail",
+    "body": "lelorinel666@gmail.com",
+    "description": "Insert your Gmail address"
+  },
+  "Gmailwork": {
+    "prefix": "gmail",
+    "body": "onur@cypien.ai",
+    "description": "Insert your Gmail address"
+  },
+  "LeLoR": {
+    "prefix": "lelor",
+    "body": "lelorine666@gmail.com",
+    "description": "Insert the Rootknecht email address"
+  },
+  "Modeline": {
+    "prefix": "modeline",
+    "body": "vim: set foldmethod=marker foldmarker={{{,}}} :",
+    "description": "Insert a Vim modeline for fold settings"
+  },
+  "Current Date": {
+    "prefix": "date",
+    "body": "${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+    "description": "Insert the current date in YYYY-MM-DD format"
+  },
+  "Current Time": {
+    "prefix": "time",
+    "body": "${CURRENT_HOUR}:${CURRENT_MINUTE}",
+    "description": "Insert the current time in HH:MM format"
+  },
+  "ISO Date-Time": {
+    "prefix": "htime",
+    "body": "${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}T${CURRENT_HOUR}:${CURRENT_MINUTE}:${CURRENT_SECOND}+10:00",
+    "description": "Insert the current date and time in ISO 8601 format"
+  },
+  "bang": {
+    "prefix": ["bang"],
+    "body": ["#!/usr/bin/env ${1:sh|zsh|bash|python|node}"],
+    "description": "Shebang!"
+  },
+  "todo": {
+    "prefix": ["todo", "todoo"],
+    "body": [
+      "// TODO: ${1:Do something} (${CURRENT_MONTH_NAME} ${CURRENT_DATE}, ${CURRENT_YEAR} ${CURRENT_HOUR}:${CURRENT_MINUTE}, ${2:${VIM:\\$GITHUB_USER}})\n$0"
+    ]
+  },
+  "note": {
+    "prefix": ["note", "note"],
+    "body": [
+      "// NOTE: ${1:Do something} (${CURRENT_MONTH_NAME} ${CURRENT_DATE}, ${CURRENT_YEAR} ${CURRENT_HOUR}:${CURRENT_MINUTE}, ${2:${VIM:\\$GITHUB_USER}})\n$0"
+    ]
+  },
+  "fix": {
+    "prefix": ["fix"],
+    "body": [
+      "// FIX: ${1:Do something} (${CURRENT_MONTH_NAME} ${CURRENT_DATE}, ${CURRENT_YEAR} ${CURRENT_HOUR}:${CURRENT_MINUTE}, ${2:${VIM:\\$GITHUB_USER}})\n$0"
+    ]
+  },
+  "bug": {
+    "prefix": ["bug"],
+    "body": [
+      "// BUG: ${1:Do something} (${CURRENT_MONTH_NAME} ${CURRENT_DATE}, ${CURRENT_YEAR} ${CURRENT_HOUR}:${CURRENT_MINUTE}, ${2:${VIM:\\$GITHUB_USER}})\n$0"
+    ]
+  },
+  "uuid": {
+    "prefix": "uuid",
+    "body": [
+      "${VIM:system('python -c \"import uuid, sys;sys.stdout.write(str(uuid.uuid4()))\"')}"
+    ]
+  }
+}
