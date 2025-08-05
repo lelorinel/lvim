@@ -273,3 +273,59 @@ end
 -- vim.cmd([[
 -- autocmd VimEnter * execute "normal \<M-n>"
 -- ]])
+
+-- if neovide then set background transparent
+if vim.g.neovide then
+  vim.g.neovide_opacity = 0.8
+end
+
+if vim.g.vscode then
+  local keymap = vim.keymap.set
+  local opts = { noremap = true, silent = true }
+
+  -- remap leader key
+  keymap("n", "<Space>", "", opts)
+  vim.g.mapleader = " "
+  vim.g.maplocalleader = " "
+
+  -- yank to system clipboard
+  keymap({ "n", "v" }, "<leader>y", '"+y', opts)
+
+  -- paste from system clipboard
+  keymap({ "n", "v" }, "<leader>p", '"+p', opts)
+
+  -- better indent handling
+  keymap("v", "<", "<gv", opts)
+  keymap("v", ">", ">gv", opts)
+
+  -- move text up and down
+  keymap("v", "J", ":m .+1<CR>==", opts)
+  keymap("v", "K", ":m .-2<CR>==", opts)
+  keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
+  keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
+
+  -- paste preserves primal yanked piece
+  keymap("v", "p", '"_dP', opts)
+
+  -- removes highlighting after escaping vim search
+  keymap("n", "<Esc>", "<Esc>:noh<CR>", opts)
+end
+
+-- For kitty
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.fn.jobstart({ "kitty", "@", "set-spacing", "padding=0" }, {
+      -- padding-left , padding-bottom, margin-*, etc... also can be passed
+      detach = true,
+      -- detach to make sure it doesn’t interfere with nvim
+    })
+  end,
+})
+vim.api.nvim_create_autocmd("VimLeave", {
+  callback = function()
+    vim.fn.jobstart({ "kitty", "@", "set-spacing", "padding=default" }, {
+      --- reset on exit, (default is 25)
+      detach = true,
+    })
+  end,
+})

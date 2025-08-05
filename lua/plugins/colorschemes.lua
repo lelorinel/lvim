@@ -1,19 +1,34 @@
--- lua/plugins/rose-pine.lua
+-- lua/plugins/colorschemes.lua
 return {
   {
     "rose-pine/neovim",
     name = "rose-pine",
     config = function()
-      -- vim.cmd("colorscheme rose-pine")
+      require("rose-pine").setup({
+        disable_background = true, -- Disable setting background
+        disable_float_background = true, -- Disable setting float background
+        disable_italics = true, -- Disable italics
+        dark_variant = "moon", -- Options: 'main', 'moon', 'dawn'
+      })
     end,
   },
   {
     "navarasu/onedark.nvim",
+    config = function()
+      require("onedark").setup({
+        style = "darker", -- Options: 'darker', 'warmer', 'cooler', 'deep', 'warm', 'light'
+        -- transparent = true, -- Enable transparent background
+        term_colors = true, -- Enable terminal colors
+        ending_tildes = false, -- Show end-of-buffer tildes
+        cmp_itemkind_reverse = false, -- Reverse item kind highlights in cmp menu
+      })
+      -- require("onedark").load()
+    end,
   },
   {
     "nyoom-engineering/oxocarbon.nvim",
     config = function()
-      -- vim.cmd("colorscheme oxocarbon")
+      -- vim.g.oxocarbon_lua_transparent = true -- Enable transparent background
     end,
   },
   {
@@ -21,24 +36,23 @@ return {
     config = function()
       require("nightfox").setup({
         options = {
-          -- Compiled file's destination location
           compile_path = vim.fn.stdpath("cache") .. "/nightfox",
-          compile_file_suffix = "_compiled", -- Compiled file suffix
-          transparent = false, -- Disable setting background
-          terminal_colors = true, -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
-          dim_inactive = false, -- Non focused panes set to alternative background
-          module_default = true, -- Default enable value for modules
+          compile_file_suffix = "_compiled",
+          -- transparent = true, -- Enable transparent background
+          terminal_colors = true,
+          dim_inactive = false,
+          module_default = true,
           colorblind = {
-            enable = false, -- Enable colorblind support
-            simulate_only = false, -- Only show simulated colorblind colors and not diff shifted
+            enable = false,
+            simulate_only = false,
             severity = {
-              protan = 0, -- Severity [0,1] for protan (red)
-              deutan = 0, -- Severity [0,1] for deutan (green)
-              tritan = 0, -- Severity [0,1] for tritan (blue)
+              protan = 0,
+              deutan = 0,
+              tritan = 0,
             },
           },
-          styles = { -- Style to be applied to different syntax groups
-            comments = "NONE", -- Value is any valid attr-list value `:help attr-list`
+          styles = {
+            comments = "NONE",
             conditionals = "NONE",
             constants = "NONE",
             functions = "NONE",
@@ -49,40 +63,68 @@ return {
             types = "NONE",
             variables = "NONE",
           },
-          inverse = { -- Inverse highlight for different types
+          inverse = {
             match_paren = false,
             visual = false,
             search = false,
           },
-          modules = { -- List of various plugins and additional options
-            -- ...
-          },
         },
-        palettes = {},
-        specs = {},
-        groups = {},
       })
-
-      -- vim.cmd("dayfox")
     end,
   },
-  { "rafamadriz/neon", config = function() end },
-  { "marko-cerovac/material.nvim" },
-  { "bluz71/vim-nightfly-colors", name = "nightfly", lazy = false, priority = 1000 },
   {
-    "tokyonight.nvim",
-    opts = {
-      transparent = true,
-      styles = {
-        sidebars = "transparent",
-        floats = "transparent",
-      },
-    },
+    "rafamadriz/neon",
+    config = function()
+      vim.g.neon_style = "default"
+      -- vim.g.neon_transparent = true -- Enable transparent background
+    end,
+  },
+  {
+    "marko-cerovac/material.nvim",
+    config = function()
+      require("material").setup({
+        disable = {
+          background = true, -- Enable transparent background
+        },
+        styles = {
+          sidebars = "transparent",
+          floats = "transparent",
+        },
+      })
+    end,
+  },
+  {
+    "bluz71/vim-nightfly-colors",
+    name = "nightfly",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      -- vim.g.nightflyTransparent = true -- Enable transparent background
+    end,
+  },
+  {
+    "folke/tokyonight.nvim",
+    config = function()
+      -- require("tokyonight").setup({
+      -- transparent = true, -- Enable transparent background
+      -- styles = {
+      --   sidebars = "transparent",
+      --   floats = "transparent",
+      -- },
+      -- })
+    end,
   },
   {
     "loctvl842/monokai-pro.nvim",
     config = function()
-      -- vim.cmd("colorscheme monokai-pro-default")
+      require("monokai-pro").setup({
+        -- transparent_background = true, -- Enable transparent background
+        -- styles = {
+        --   sidebars = "transparent",
+        --   floats = "transparent",
+        -- },
+      })
     end,
   },
+  { "rebelot/kanagawa.nvim" },
 }
