@@ -1,4 +1,9 @@
 -- return {}
+
+local root_dir = require("lspconfig.util").root_pattern(".git", "pom.xml", "build.gradle")(vim.api.nvim_buf_get_name(0))
+local launcher_jar = vim.fn.glob("~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar")
+
+-- require("java").setup({})
 return {
   "neovim/nvim-lspconfig",
   event = "LazyFile",
@@ -94,6 +99,16 @@ return {
               },
             },
           },
+        },
+        jdtls = {
+          cmd = { "java-lsp.sh", root_dir, launcher_jar },
+          filetypes = { "java" },
+          root_dir = root_dir,
+        },
+        java_language_server = {
+          cmd = { "java-lsp.sh", root_dir, launcher_jar },
+          filetypes = { "java" },
+          root_dir = root_dir,
         },
       },
       -- you can do any additional lsp server setup here
