@@ -17,7 +17,6 @@ return {
     config = function()
       require("onedark").setup({
         style = "darker", -- Options: 'darker', 'warmer', 'cooler', 'deep', 'warm', 'light'
-        -- transparent = true, -- Enable transparent background
         term_colors = true, -- Enable terminal colors
         ending_tildes = false, -- Show end-of-buffer tildes
         cmp_itemkind_reverse = false, -- Reverse item kind highlights in cmp menu
@@ -27,9 +26,7 @@ return {
   },
   {
     "nyoom-engineering/oxocarbon.nvim",
-    config = function()
-      -- vim.g.oxocarbon_lua_transparent = true -- Enable transparent background
-    end,
+    config = function() end,
   },
   {
     "EdenEast/nightfox.nvim",
@@ -38,7 +35,6 @@ return {
         options = {
           compile_path = vim.fn.stdpath("cache") .. "/nightfox",
           compile_file_suffix = "_compiled",
-          -- transparent = true, -- Enable transparent background
           terminal_colors = true,
           dim_inactive = false,
           module_default = true,
@@ -76,20 +72,14 @@ return {
     "rafamadriz/neon",
     config = function()
       vim.g.neon_style = "default"
-      -- vim.g.neon_transparent = true -- Enable transparent background
     end,
   },
   {
     "marko-cerovac/material.nvim",
     config = function()
       require("material").setup({
-        disable = {
-          background = true, -- Enable transparent background
-        },
-        styles = {
-          sidebars = "transparent",
-          floats = "transparent",
-        },
+        disable = {},
+        styles = {},
       })
     end,
   },
@@ -98,33 +88,30 @@ return {
     name = "nightfly",
     lazy = false,
     priority = 1000,
-    config = function()
-      -- vim.g.nightflyTransparent = true -- Enable transparent background
-    end,
+    config = function() end,
   },
   {
     "folke/tokyonight.nvim",
     config = function()
-      -- require("tokyonight").setup({
-      -- transparent = true, -- Enable transparent background
-      -- styles = {
-      --   sidebars = "transparent",
-      --   floats = "transparent",
-      -- },
-      -- })
+      require("tokyonight").setup({})
     end,
   },
   {
     "loctvl842/monokai-pro.nvim",
     config = function()
-      require("monokai-pro").setup({
-        -- transparent_background = true, -- Enable transparent background
-        -- styles = {
-        --   sidebars = "transparent",
-        --   floats = "transparent",
-        -- },
+      require("monokai-pro").setup({})
+    end,
+  },
+  {
+    "rebelot/kanagawa.nvim",
+    config = function()
+      require("kanagawa").setup({
+        theme = "wave", -- Load "wave" theme when 'background' option is not set
+        background = { -- Map the value of 'background' option to a theme
+          dark = "wave", -- Try "dragon" for a darker theme
+          light = "lotus",
+        },
       })
     end,
   },
-  { "rebelot/kanagawa.nvim" },
 }

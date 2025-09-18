@@ -277,6 +277,7 @@ end
 -- if neovide then set background transparent
 if vim.g.neovide then
   vim.g.neovide_opacity = 0.8
+  vim.o.guifont = "SpaceMono Nerd Font:8"
 end
 
 if vim.g.vscode then
@@ -329,3 +330,6 @@ vim.api.nvim_create_autocmd("VimLeave", {
     })
   end,
 })
+
+-- set font to SpaceMono Nerd Font
+vim.o.guifont = "SpaceMono Nerd Font:h14"

@@ -1,4 +1,4 @@
-return {}
+-- return {}
 
 -- local M = {
 --   "neovim/nvim-lspconfig",
@@ -9,7 +9,7 @@ return {}
 -- }
 --
 -- function M.config()
---   require("neodev").setup({})
+--   -- require("neodev").setup({})
 --   local nvim_lsp = require("lspconfig")
 --   -- local configs = require 'lspconfig/configs'
 --   -- ------------------
@@ -275,3 +275,135 @@ return {}
 -- end
 --
 -- return M
+
+-- lua/plugins/lspconfig.lua
+
+return {
+  "neovim/nvim-lspconfig",
+  -- event = { "BufReadPre", "BufNewFile" }, -- 'VeryLazy' daha güvenli bir başlangıç noktasıdır.
+  event = "VeryLazy",
+  dependencies = {
+    -- Bu iki eklenti, LSP sunucularını otomatik olarak kurmayı ve yönetmeyi sağlar. Şiddetle tavsiye edilir.
+    { "williamboman/mason.nvim", config = true }, -- config = true ile mason.nvim'i otomatik başlatır.
+    "williamboman/mason-lspconfig.nvim",
+
+    -- Diğer bağımlılıklarınız
+    "hrsh7th/cmp-nvim-lsp",
+    "RRethy/goto-preview",
+  },
+  config = function()
+    -- ==========================================================================================
+    -- 1. KRİTİK ADIM: Lspsaga'nın çalışması için Neovim'in varsayılan hata gösterimini kapatıyoruz.
+    -- ==========================================================================================
+    -- Sizin yapılandırmanızda bu 'true' olarak ayarlıydı, bu da sorunun ana kaynağıydı.
+    vim.diagnostic.config({
+      virtual_text = false, -- !! BURASI EN ÖNEMLİ DEĞİŞİKLİK !!
+      signs = true,
+      underline = true,
+      update_in_insert = false,
+      severity_sort = true,
+    })
+
+    -- Sol taraftaki gutter'da gösterilecek hata ikonlarını ayarla
+    local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+    for type, icon in pairs(signs) do
+      local hl = "DiagnosticSign" .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    end
+
+    -- ==========================================================================================
+    -- 2. on_attach FONKSİYONU: Tüm LSP sunucuları başladığında çalışacak ortak ayarlar
+    -- ==========================================================================================
+    local on_attach = function(client, bufnr)
+      -- goto-preview tuş atamaları (sizin ayarlarınız korundu)
+      local map = function(mode, lhs, rhs, desc)
+        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: " .. desc })
+      end
+
+      map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", "Preview Definition")
+      map("n", "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", "Preview Implementation")
+      map("n", "gpt", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", "Preview Type Definition")
+      map("n", "gq", "<cmd>lua require('goto-preview').close_all_win()<CR>", "Close Preview")
+      map("n", "gF", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", "Preview References")
+
+      -- Diğer LSP tuş atamaları (en sık kullanılanlar)
+      map("n", "gd", "<cmd>vim.lsp.buf.definition()<CR>", "Goto Definition")
+      map("n", "K", "<cmd>vim.lsp.buf.hover()<CR>", "Hover")
+      map("n", "<leader>rn", "<cmd>vim.lsp.buf.rename()<CR>", "Rename")
+      map("n", "<leader>ca", "<cmd>vim.lsp.buf.code_action()<CR>", "Code Action")
+    end
+
+    -- ==========================================================================================
+    -- 3. MASON & LSPCONFIG ENTEGRASYONU: Sunucuları otomatik kur ve yapılandır
+    -- ==========================================================================================
+    local lspconfig = require("lspconfig")
+    local mason_lspconfig = require("mason-lspconfig")
+    local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+    -- Kurulmasını istediğiniz sunucuların listesi. 'pylsp' yerine 'pyright' genellikle daha iyidir.
+    local servers = {
+      "bashls",
+      "sqlls",
+      "dockerls",
+      "marksman",
+      "ansiblels",
+      "denols",
+      "gopls",
+      "yamlls",
+      "lua_ls",
+      "nginx_ls",
+      "html",
+      "pylsp", -- veya "pyright"
+    }
+
+    -- mason-lspconfig'in bu sunucuları kurduğundan emin olmasını sağla
+    mason_lspconfig.setup({
+      ensure_installed = servers,
+    })
+
+    -- Her bir sunucu için ortak ayarları (`on_attach` ve `capabilities`) kullanarak yapılandır
+    mason_lspconfig.setup_handlers({
+      function(server_name)
+        -- Sunucuya özel ayarları burada tanımlayabilirsiniz
+        local server_opts = {
+          on_attach = on_attach,
+          capabilities = capabilities,
+        }
+
+        -- Go ve Python için sizin özel ayarlarınızı buraya ekliyoruz
+        if server_name == "gopls" then
+          server_opts.settings = {
+            gopls = {
+              gofumpt = true,
+              usePlaceholders = true,
+              completeUnimported = true,
+              analyses = { unusedparams = true, shadow = true },
+              staticcheck = true,
+            },
+          }
+        end
+
+        if server_name == "pylsp" then
+          server_opts.settings = {
+            pylsp = {
+              plugins = {
+                rope_autoimport = { enabled = true },
+              },
+            },
+          }
+        end
+
+        if server_name == "lua_ls" then
+          server_opts.settings = {
+            Lua = {
+              diagnostics = { globals = { "vim", "use" } },
+            },
+          }
+        end
+
+        -- Sunucuyu yapılandır
+        lspconfig[server_name].setup(server_opts)
+      end,
+    })
+  end,
+}

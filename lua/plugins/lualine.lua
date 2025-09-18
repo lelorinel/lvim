@@ -20,9 +20,9 @@ function M.config()
     "diagnostics",
     sources = { "nvim_diagnostic" },
     sections = { "error", "warn" },
-    symbols = { error = " ", warn = " " },
+    symbols = { error = "❌ ", warn = "⚠️ " },
     -- symbols = { error = "  ", warn = "  " },
-    colored = false,
+    colored = true,
     update_in_insert = false,
     always_visible = true,
   }
@@ -33,7 +33,12 @@ function M.config()
   local diff = {
     "diff",
     colored = false,
-    symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
+    -- symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
+    symbols = {
+      added = "%#DiffAdd#➕%* ",
+      modified = "%#DiffChange#✏️%* ",
+      removed = "%#DiffDelete#➖%* ",
+    },
     cond = hide_in_width,
   }
   -- cool function for progress
