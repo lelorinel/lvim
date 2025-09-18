@@ -138,7 +138,7 @@ return {
             ]])
     end,
   },
-  { "williamboman/mason-lspconfig.nvim" },
+  { "mason-org/mason-lspconfig.nvim" },
   {
     ---- A code preview plugin.
     "rmagatti/goto-preview",

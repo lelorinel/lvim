@@ -51,3 +51,28 @@ require("lazy").setup({
     },
   },
 })
+
+-- local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+-- if not vim.loop.fs_stat(lazypath) then
+--   vim.fn.system({
+--     "git",
+--     "clone",
+--     "--filter=blob:none",
+--     "https://github.com/folke/lazy.nvim.git",
+--     "--branch=stable",
+--     lazypath,
+--   })
+-- end
+-- vim.opt.rtp:prepend(lazypath)
+--
+-- -- Lazy'ye eklenti yapılandırmalarını 'lua/plugins' klasöründen okumasını söylüyoruz.
+-- require("lazy").setup({
+--   spec = {
+--     -- Bu satır, lua/plugins/ dizinindeki tüm .lua dosyalarını otomatik olarak yükler.
+--     { import = "plugins" },
+--   },
+--   change_detection = {
+--     enabled = true,
+--     notify = false,
+--   },
+-- })

@@ -155,54 +155,39 @@
 -- return M
 
 -- lua/plugins/cmp.lua
-
 return {
   "hrsh7th/nvim-cmp",
-  -- 'InsertEnter' anında yüklenerek anlık tamamlama sağlar
   event = "InsertEnter",
-  -- nvim-cmp, tek başına çalışmaz. Kaynaklara (sources) ve bir snippet motoruna ihtiyaç duyar.
-  -- Bu 'dependencies' tablosu, nvim-cmp çalışmadan önce her şeyin hazır olmasını sağlar.
   dependencies = {
-    -- Snippet motoru: Kod parçacıkları (for döngüsü, if bloğu vb.) için gereklidir.
     "L3MON4D3/LuaSnip",
-    -- Snippet motorunu nvim-cmp'ye bağlayan köprü
     "saadparwaiz1/cmp_luasnip",
-
-    -- Diğer tamamlama kaynakları
-    "hrsh7th/cmp-nvim-lsp", -- LSP sunucusundan gelen tamamlamalar (BU SİZDE HATAYI VEREN EKLENTİ)
-    "hrsh7th/cmp-path", -- Dosya yolları için tamamlama
-    "hrsh7th/cmp-buffer", -- Mevcut dosyadaki kelimeler için tamamlama
+    "hrsh7th/cmp-nvim-lsp", -- Bu satır burada kalmalı!
+    "hrsh7th/cmp-path",
+    "hrsh7th/cmp-buffer",
   },
   config = function()
     local cmp = require("cmp")
     local luasnip = require("luasnip")
 
-    -- ==================
-    --  Yapılandırma
-    -- ==================
+    -- =========================================================================
+    -- !! YENİ EKLENECEK SATIR BURADA !!
+    -- LSP 'capabilities' objesini burada oluşturup herkesin erişebileceği
+    -- bir alana kaydediyoruz.
+    _G.LSP_CAPABILITIES = require("cmp_nvim_lsp").default_capabilities()
+    -- =========================================================================
+
     cmp.setup({
-      -- Snippet motorunu ayarla
       snippet = {
         expand = function(args)
           luasnip.lsp_expand(args.body)
         end,
       },
-
-      -- Tuş Atamaları
       mapping = cmp.mapping.preset.insert({
-        -- Öneriler arasında gezinme
         ["<C-k>"] = cmp.mapping.select_prev_item(),
         ["<C-j>"] = cmp.mapping.select_next_item(),
-
-        -- Bir öneriyi onayla
         ["<CR>"] = cmp.mapping.confirm({ select = true }),
-
-        -- Tamamlama menüsünü manuel olarak tetikle
         ["<C-Space>"] = cmp.mapping.complete(),
       }),
-
-      -- Kullanılacak tamamlama kaynaklarını belirle
-      -- Kaynakların sırası, önerilerin öncelik sırasını belirler.
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" },

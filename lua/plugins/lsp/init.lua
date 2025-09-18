@@ -275,135 +275,105 @@
 -- end
 --
 -- return M
-
--- lua/plugins/lspconfig.lua
-
 return {
   "neovim/nvim-lspconfig",
-  -- event = { "BufReadPre", "BufNewFile" }, -- 'VeryLazy' daha güvenli bir başlangıç noktasıdır.
   event = "VeryLazy",
   dependencies = {
-    -- Bu iki eklenti, LSP sunucularını otomatik olarak kurmayı ve yönetmeyi sağlar. Şiddetle tavsiye edilir.
-    { "williamboman/mason.nvim", config = true }, -- config = true ile mason.nvim'i otomatik başlatır.
-    "williamboman/mason-lspconfig.nvim",
-
-    -- Diğer bağımlılıklarınız
-    "hrsh7th/cmp-nvim-lsp",
-    "RRethy/goto-preview",
+    "mason-org/mason.nvim",
+    "mason-org/mason-lspconfig.nvim",
+    "hrsh7th/nvim-cmp", -- Dependency to ensure correct load order
   },
   config = function()
-    -- ==========================================================================================
-    -- 1. KRİTİK ADIM: Lspsaga'nın çalışması için Neovim'in varsayılan hata gösterimini kapatıyoruz.
-    -- ==========================================================================================
-    -- Sizin yapılandırmanızda bu 'true' olarak ayarlıydı, bu da sorunun ana kaynağıydı.
+    -- =================================================================
+    -- Gerekli eklentileri yerel değişkenlere yükle
+    -- =================================================================
+    local lspconfig = require("lspconfig")
+    local mason_lspconfig = require("mason-lspconfig")
+    -- -- Diagnostic settings
+    -- vim.diagnostic.config({
+    --   -- virtual_text'i bir tablo olarak ayarlayarak detaylı kontrol sağlıyoruz.
+    --   virtual_text = {
+    --     prefix = "▸", -- Her mesajın başına bu ikonu ekler (ok işareti).
+    --     spacing = 4, -- Hata mesajı ile kod arasında boşluk bırakır.
+    --     source = "if_nosource", -- Sadece kaynak belirtilmemişse göster (örn: "gopls:"). 'true' de yapabilirsiniz.
+    --   },
+    --   signs = true,
+    --   underline = true,
+    --   update_in_insert = false,
+    --   severity_sort = true,
+    -- })
+    -- Diagnostic settings
     vim.diagnostic.config({
-      virtual_text = false, -- !! BURASI EN ÖNEMLİ DEĞİŞİKLİK !!
+      -- 1. Satır sonu metnini kapatıyoruz, çünkü artık satır altı gösterimi kullanacağız.
+      virtual_text = false,
+
+      -- 2. Hata mesajlarını hatalı satırın altında, sanal bir satırda gösteriyoruz.
+      --    Bu özellik Neovim v0.10+ ile dahili olarak gelmektedir.
+      virtual_lines = {
+        only_current_line = true, -- Sadece imlecin bulunduğu satırdaki hatayı gösterir. Performans ve okunabilirlik için şiddetle tavsiye edilir.
+        -- `false` yaparsanız, ekrandaki tüm hatalar altlarında gösterilir ve bu da ekranı kalabalıklaştırabilir.
+      },
+
+      -- Diğer ayarlarınız aynı kalabilir
       signs = true,
       underline = true,
       update_in_insert = false,
       severity_sort = true,
     })
 
-    -- Sol taraftaki gutter'da gösterilecek hata ikonlarını ayarla
+    -- Diagnostik ayarları
+    -- vim.diagnostic.config({
+    --   virtual_text = false,
+    --   signs = true,
+    --   underline = true,
+    --   update_in_insert = false,
+    --   severity_sort = true,
+    -- })
+
+    -- Diagnostik için ikonlar
     local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
     for type, icon in pairs(signs) do
       local hl = "DiagnosticSign" .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
     end
 
-    -- ==========================================================================================
-    -- 2. on_attach FONKSİYONU: Tüm LSP sunucuları başladığında çalışacak ortak ayarlar
-    -- ==========================================================================================
+    -- Her bir LSP sunucusu için çalışacak on_attach fonksiyonu
     local on_attach = function(client, bufnr)
-      -- goto-preview tuş atamaları (sizin ayarlarınız korundu)
       local map = function(mode, lhs, rhs, desc)
-        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, noremap = true, silent = true, desc = "LSP: " .. desc })
+        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = "LSP: " .. desc })
       end
-
-      map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", "Preview Definition")
-      map("n", "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", "Preview Implementation")
-      map("n", "gpt", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", "Preview Type Definition")
-      map("n", "gq", "<cmd>lua require('goto-preview').close_all_win()<CR>", "Close Preview")
-      map("n", "gF", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", "Preview References")
-
-      -- Diğer LSP tuş atamaları (en sık kullanılanlar)
-      map("n", "gd", "<cmd>vim.lsp.buf.definition()<CR>", "Goto Definition")
-      map("n", "K", "<cmd>vim.lsp.buf.hover()<CR>", "Hover")
-      map("n", "<leader>rn", "<cmd>vim.lsp.buf.rename()<CR>", "Rename")
-      map("n", "<leader>ca", "<cmd>vim.lsp.buf.code_action()<CR>", "Code Action")
+      map("n", "gd", vim.lsp.buf.definition, "Goto Definition")
+      map("n", "K", vim.lsp.buf.hover, "Hover")
+      map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
+      map("n", "<leader>ca", vim.lsp.buf.code_action, "Code Action")
     end
 
-    -- ==========================================================================================
-    -- 3. MASON & LSPCONFIG ENTEGRASYONU: Sunucuları otomatik kur ve yapılandır
-    -- ==========================================================================================
-    local lspconfig = require("lspconfig")
-    local mason_lspconfig = require("mason-lspconfig")
-    local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-    -- Kurulmasını istediğiniz sunucuların listesi. 'pylsp' yerine 'pyright' genellikle daha iyidir.
+    -- Mason tarafından kurulacak sunucuların listesi
     local servers = {
+      "gopls",
+      "lua_ls",
       "bashls",
       "sqlls",
       "dockerls",
       "marksman",
-      "ansiblels",
-      "denols",
-      "gopls",
       "yamlls",
-      "lua_ls",
-      "nginx_ls",
       "html",
-      "pylsp", -- veya "pyright"
     }
 
-    -- mason-lspconfig'in bu sunucuları kurduğundan emin olmasını sağla
+    -- Sunucuların kurulu olduğundan emin ol
     mason_lspconfig.setup({
       ensure_installed = servers,
     })
 
-    -- Her bir sunucu için ortak ayarları (`on_attach` ve `capabilities`) kullanarak yapılandır
-    mason_lspconfig.setup_handlers({
-      function(server_name)
-        -- Sunucuya özel ayarları burada tanımlayabilirsiniz
-        local server_opts = {
-          on_attach = on_attach,
-          capabilities = capabilities,
-        }
-
-        -- Go ve Python için sizin özel ayarlarınızı buraya ekliyoruz
-        if server_name == "gopls" then
-          server_opts.settings = {
-            gopls = {
-              gofumpt = true,
-              usePlaceholders = true,
-              completeUnimported = true,
-              analyses = { unusedparams = true, shadow = true },
-              staticcheck = true,
-            },
-          }
-        end
-
-        if server_name == "pylsp" then
-          server_opts.settings = {
-            pylsp = {
-              plugins = {
-                rope_autoimport = { enabled = true },
-              },
-            },
-          }
-        end
-
-        if server_name == "lua_ls" then
-          server_opts.settings = {
-            Lua = {
-              diagnostics = { globals = { "vim", "use" } },
-            },
-          }
-        end
-
-        -- Sunucuyu yapılandır
-        lspconfig[server_name].setup(server_opts)
-      end,
-    })
+    -- =================================================================
+    -- DÜZELTME: Her sunucuyu bir döngü ile yapılandır.
+    -- `setup_handlers` fonksiyonu artık mevcut değil.
+    -- =================================================================
+    for _, server_name in ipairs(servers) do
+      lspconfig[server_name].setup({
+        on_attach = on_attach,
+        capabilities = _G.LSP_CAPABILITIES, -- cmp.lua'dan gelen global capabilities'i kullan
+      })
+    end
   end,
 }
